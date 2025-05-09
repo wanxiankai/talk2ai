@@ -1,8 +1,11 @@
+import AccountDropdown from '@/components/AccountDropdown'
 import React from 'react'
 
 function ChatPage() {
   return (
-    <div>ChatPage</div>
+    <>
+    <AccountDropdown/>
+    </>
   )
 }
 
