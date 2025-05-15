@@ -1,12 +1,14 @@
-import AccountDropdown from '@/components/AccountDropdown'
+'use client'
+
+import Main from '@/components/chat/Main'
+import Navigation from '@/components/chat/Navigation'
 import React from 'react'
 
-function ChatPage() {
+export default function Home() {
   return (
-    <>
-    <AccountDropdown/>
-    </>
+    <div className="flex-1 flex flex-row w-full overflow-y-auto overflow-x-hidden">
+      <Navigation />
+      <Main />
+    </div>
   )
 }
-
-export default ChatPage
