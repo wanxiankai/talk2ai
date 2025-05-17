@@ -26,6 +26,7 @@
     "react-dom": "^19.0.0",
     "react-intersection-observer": "^9.16.0",
     "react-slick": "^0.30.3",
+    "react-textarea-autosize": "^8.5.9",
     "react-toastify": "^11.0.5",
     "react-typist-component": "^1.1.1",
     "slick-carousel": "^1.8.1",
