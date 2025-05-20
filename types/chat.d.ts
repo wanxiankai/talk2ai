@@ -6,41 +6,23 @@ export interface MessageRequestBody {
 }
 
 export interface Message {
-    id?: string
-    session_id?: string
-    additional_kwargs?: {
-        actions?: ActionItemType[]
-        date?: string
-        unique_id?: string
-    }
+    id: string
     content: string
-    type: "human" | "ai"
-    waitAction?: boolean
-    isChatting?: boolean
-    answerStatus?: 'typing' | 'done'
-    actions?: ActionItemType[]
+    role: string
+    chatId?: string
+    createTime?: string
+    updateTime?: string
+    answerStatus?: 'loading' | 'pending' | 'done' | 'error'
 }
-
-export type ActionType = 'ask' | 'wallet' | 'backend' | 'table' | 'showdata' | 'history'
-
-export interface ActionItemType {
-    type: ActionType
-    data: any
-    code?: number
-    info?: {
-        content: string
-        code?: number
-    }
-    statusText?: string
-}
-
-export type ActionsType = ActionItemType[]
 
 export interface ChatItemType {
-    session_id: string
-    session_history: {
-        content: string
-    }
+    id: string
+    title: string
+    model: string
+    userId: string
+    messages: Message[]
+    updateTime: string
+    createTime: string
 }
 
 export interface ChatHistoryType {
