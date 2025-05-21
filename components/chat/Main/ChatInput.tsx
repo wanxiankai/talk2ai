@@ -1,13 +1,15 @@
 import SvgIcon from '@/components/common/SvgIcon'
 import { useChatStore } from '@/store/chatStore'
 import { Message } from '@/types/chat'
+import { useSession } from 'next-auth/react'
 import React, { useEffect, useRef } from 'react'
 import TextareaAutoSize from 'react-textarea-autosize'
 import { toast } from 'react-toastify'
 
 export default function ChatInput() {
+    const { data: session } = useSession();
     const [messageText, setMessageText] = React.useState('')
-    const { chatId, setChatId, addNewMessage, updateLatestMessage, updateChatHistoryList } = useChatStore(state => state)
+    const { chatId, model, setChatId, addNewMessage, messageList, updateLatestMessage } = useChatStore(state => state)
     const chatIdRef = useRef<string | null>(null)
     const isSendingRef = useRef(false)
     const stopRef = useRef(false)
@@ -29,68 +31,155 @@ export default function ChatInput() {
     }
 
     const handleSendMessage = () => {
-        if (messageText.trim() === '') return
-        if (isSendingRef.current) return
-        sendMessage(messageText)
+        if (!messageText.trim() || isSendingRef.current) return
+        sendMessage()
     }
 
-    const createOrGetSessionId = async () => {
+    const createOrGetChatId = async (message: string, role: string) => {
         if (chatId === null) {
-            const currentChatId = await createSession()
+            await createChat(message)
+        }
+        await createMessage(message, role)
+    }
+
+    const createChat = async (message: string) => {
+        try {
+            const response = await fetch('/api/chat/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: message.substring(0, 20),
+                    model,
+                    userId: (session?.user as any).id,
+                }),
+            })
+            if (!response.ok) {
+                toast.error('创建聊天失败')
+                throw new Error('Failed to create chat')
+            }
+            const { data } = await response.json()
+            const currentChatId = data.chatId
+            console.log('create chat', data.chatId, chatIdRef.current)
             if (!chatIdRef.current) {
                 chatIdRef.current = currentChatId
                 setChatId(currentChatId)
             }
             return currentChatId
-        } else {
-            return chatId
+        }
+        catch (error) {
+            console.error('Error creating chat:', error)
+            toast.error('创建聊天失败')
+            throw new Error('Failed to create chat')
         }
     }
 
-    const sendMessage = async (message: string) => {
+
+    const createMessage = async (message: string, role: string) => {
+        console.log('create message', chatIdRef.current)
         try {
-            const currentChatId = await createOrGetSessionId()
-            isSendingRef.current = true
-            const currentMessage: Message = {
-                id: new Date().getTime().toString(),
-                chatId: currentChatId,
-                content: message,
-                role: 'human',
+            const response = await fetch('/api/message/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chatId: chatIdRef.current,
+                    content: message,
+                    role,
+                }),
+            })
+            if (!response.ok) {
+                toast.error('创建消息失败')
+                throw new Error('Failed to create message')
             }
-            addNewMessage(currentMessage)
-            const aiLoadingMessage: Message = {
-                id: new Date().getTime().toString(),
-                chatId: currentChatId,
-                content: '',
-                role: 'ai',
-                answerStatus: 'typing',
-                isChatting: true
+            const data = await response.json()
+            const currentChatId = data.chatId
+            if (!chatIdRef.current) {
+                chatIdRef.current = currentChatId
+                setChatId(currentChatId)
             }
-            addNewMessage(aiLoadingMessage)
-            toChat(message, aiLoadingMessage, currentSessionId)
-
+            return currentChatId
         } catch (error) {
-            console.log('send message error:', error)
+            console.error('Error creating message:', error)
+            toast.error('创建消息失败')
+            throw new Error('Failed to create message')
         }
     }
 
 
-    const toChat = async (message: string, originAiMessage: Message, session_id: string) => {
+    const sendMessage = async () => {
+        const userMessage: Message = {
+            id: new Date().getTime().toString(),
+            content: messageText.trim(),
+            role: 'user',
+        }
+        addNewMessage(userMessage)
+        const currentInput = messageText;
         setMessageText('')
-        const controller = new AbortController();
-        const response = await chat(message, session_id, controller)
-        if (response.status === 200) {
+        isSendingRef.current = true
+
+        try {
+            await createOrGetChatId(currentInput, 'user')
+            const currentAiResponseMessage: Message = {
+                id: new Date().getTime().toString(),
+                chatId: chatIdRef.current,
+                content: '',
+                role: 'assistant',
+                answerStatus: 'loading',
+            }
+            addNewMessage(currentAiResponseMessage)
+            const messages = messageList.concat([userMessage])
+            const requestBody = { messages, model }
+            const controller = new AbortController();
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "text/event-stream",
+                },
+                signal: controller.signal,
+                body: JSON.stringify(requestBody)
+            })
+            if (!response.ok) {
+                console.log(response.statusText)
+                return
+            }
             if (!response.body) {
                 console.log("body error")
                 return
-            } else {
-                await processStreamResponse(response, originAiMessage)
             }
-        } else {
-            console.log('chat error:', response)
+            const reader = response.body.getReader()
+            const decoder = new TextDecoder("utf-8")
+            let done = false
+            let content = ''
+            while (!done) {
+                const { value, done: doneReading } = await reader.read()
+                done = doneReading
+                const thunk = decoder.decode(value, { stream: !done })
+                if (thunk) {
+                    updateLatestMessage({ ...currentAiResponseMessage, content: content + thunk, answerStatus: 'pending' })
+                    content += thunk
+                    if (stopRef.current) {
+                        stopRef.current = false
+                        controller.abort()
+                        break
+                    }
+                }
+            }
+            await createMessage(content, 'assistant')
+            updateLatestMessage({ ...currentAiResponseMessage, content: content, answerStatus: 'done' })
+
+        } catch (error) {
+            console.error("发送消息或处理流式响应错误:", error);
+            toast.error((error as Error).message || "与AI通信失败，请稍后再试");
+            updateLatestMessage({ ...userMessage, content: '发送消息或处理流式响应错误', answerStatus: 'error' })
+
+        } finally {
+            isSendingRef.current = false
         }
     }
-
 
     return (
         <div className='w-full flex flex-row items-center justify-center pb-2.5'>
