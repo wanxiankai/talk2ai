@@ -1,22 +1,25 @@
-import { getChatHistory } from '@/apis/get_chat_history';
-import { getHistoryByPage } from '@/apis/get_history_by_page';
 import { ChatHistoryType, Message, messageList } from '@/types/chat';
 import { create } from 'zustand';
 
 interface ChatListState {
+    chatId: string | null
+    model: string
     chatHistory: ChatHistoryType
     messageList: messageList
     isLoadingChatHistory: boolean
     isLoadingMessageList: boolean
+    setChatId: (chatId: string | null) => void
+    setModel: (model: string) => void
     getChatHistory: (page: number) => Promise<void>
-    updateChatHistoryList: (sessionId: string, content: string) => void
-    fetchMessageList: (sessionId: string) => Promise<void>
+    fetchMessageList: (chatId: string) => Promise<void>
     clearMessageList: () => void
     addNewMessage: (message: Message) => void
     updateLatestMessage: (message: Message) => void
 }
 
 export const useChatStore = create<ChatListState>((set, get) => ({
+    chatId: null,
+    model: 'grok-2-vision-1212',
     chatHistory: {
         list: [],
         hasMore: true
@@ -24,45 +27,52 @@ export const useChatStore = create<ChatListState>((set, get) => ({
     messageList: [],
     isLoadingChatHistory: false,
     isLoadingMessageList: false,
+    setChatId: (chatId: string | null) => {
+        set({ chatId })
+    },
+    setModel: (model: string) => {
+        set({ model })
+    },
     getChatHistory: async (page: number) => {
-        console.log('getChatHistory', page,)
         if (!get().chatHistory.hasMore && get().isLoadingChatHistory) return
         set({ isLoadingChatHistory: true })
-        const { data } = await getHistoryByPage(page);
-        if (data.length === 0) {
-            set({ chatHistory: { list: get().chatHistory.list, hasMore: false }, isLoadingChatHistory: false })
-            return
+        const res = await fetch(`/api/chat/list?page=${page}`, {
+            method: 'GET',
+            cache: 'no-store',
+        })
+        if (!res.ok) {
+            set({ isLoadingChatHistory: false })
+            throw new Error('Failed to fetch data')
         }
-        set({ chatHistory: { list: [...get().chatHistory.list, ...data], hasMore: true }, isLoadingChatHistory: false })
-    },
-    updateChatHistoryList: (sessionId: string, content: string) => {
-        //  if sessionId is not found,  create a new chat history with the sessionId and content as the first item to the list, else update the content of the chat history with the sessionId
-        const chatHistoryList = get().chatHistory.list
-        const hasMore = get().chatHistory.hasMore
-        const chatHistoryIndex = chatHistoryList.findIndex((chat) => chat.session_id === sessionId)
-        if (chatHistoryIndex === -1) {
-            const newChatHistory = {
-                session_id: sessionId,
-                session_history: {
-                    content: content,
-                }
-            }
-            set({ chatHistory: { list: [newChatHistory, ...chatHistoryList], hasMore: hasMore } })
+        const { data: { list, hasMore } } = await res.json()
+        if (page === 1) {
+            set({ chatHistory: { list, hasMore }, isLoadingChatHistory: false })
         } else {
-            const chatHistory = chatHistoryList[chatHistoryIndex]
-            chatHistory.session_history.content = content
-            chatHistoryList.splice(chatHistoryIndex, 1, chatHistory)
-            set({ chatHistory: { list: chatHistoryList, hasMore: hasMore } })
+            set({ chatHistory: { list: [...get().chatHistory.list, ...list], hasMore }, isLoadingChatHistory: false })
         }
     },
-    fetchMessageList: async (sessionId: string) => {
+
+    fetchMessageList: async (chatId: string) => {
         if (get().isLoadingMessageList) return
         set({ isLoadingMessageList: true })
-        const response = await getChatHistory(sessionId);
-        if (response) {
-            set({ messageList: response })
+        const response = await fetch('/api/message/list?chatId=' + chatId, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        if (!response.ok) {
+            set({ isLoadingMessageList: false })
+            throw new Error('Failed to fetch data')
         }
-        set({ isLoadingMessageList: false })
+        const data = await response.json()
+        if (data.code !== 0) {
+            set({ isLoadingMessageList: false })
+            throw new Error(data.message)
+        }
+        const { list } = data.data
+        set({ messageList: list, isLoadingMessageList: false })
     },
     clearMessageList: () => {
         set({ messageList: [] })
