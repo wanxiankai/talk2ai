@@ -7,7 +7,8 @@ import { useDialogStore } from '@/store/dialogStore'
 
 export default function DeleteChatDialog() {
     const { showDeleteChatDialog, deleteChatId, setShowDeleteChatDialog } = useDialogStore((state) => state)
-    const { chatId, setChatId } = useChatStore((state) => state)
+    const { chatId, setChatId, clearMessageList, getChatHistory } = useChatStore((state) => state)
+
 
     const handleOpenChange = (open: boolean) => {
         setShowDeleteChatDialog(open, '')
@@ -30,9 +31,10 @@ export default function DeleteChatDialog() {
                 toast.error(data.message)
                 return
             }
+            clearMessageList()
+            await getChatHistory(1)
+            setChatId(null)
             toast.success('Delete chat successfully')
-            // TODO: update chat list
-
         } catch (error) {
             console.log('error from delete session:', error)
             toast.error('Delete chat failed')
