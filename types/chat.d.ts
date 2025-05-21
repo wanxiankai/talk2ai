@@ -5,6 +5,8 @@ export interface MessageRequestBody {
     model: string
 }
 
+export type answerStatusType = 'loading' | 'pending' | 'done' | 'error' | undefined
+
 export interface Message {
     id: string
     content: string
@@ -12,7 +14,7 @@ export interface Message {
     chatId?: string | null
     createTime?: string
     updateTime?: string
-    answerStatus?: 'loading' | 'pending' | 'done' | 'error'
+    answerStatus?: answerStatusType
 }
 
 export interface ChatItemType {
