@@ -9,7 +9,7 @@ export interface Message {
     id: string
     content: string
     role: string
-    chatId?: string
+    chatId?: string | null
     createTime?: string
     updateTime?: string
     answerStatus?: 'loading' | 'pending' | 'done' | 'error'
