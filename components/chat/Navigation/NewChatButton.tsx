@@ -3,15 +3,13 @@ import React from 'react'
 import { useChatStore } from '@/store/chatStore'
 import Image from 'next/image'
 import { toast } from 'react-toastify'
-import { useUserStore } from '@/store/userStore'
 
 export default function NewChatButton() {
-  const clearMessageList = useChatStore(state => state.clearMessageList)
-  const setSessionId = useUserStore(state => state.setSessionId)
+  const { clearMessageList, setChatId } = useChatStore(state => state)
 
   const handleNewChat = async () => {
     try {
-      setSessionId(null)
+      setChatId(null)
       clearMessageList()
     } catch (error) {
       toast.error('Failed to create new chat')
