@@ -1,9 +1,16 @@
 import { ChatHistoryType, Message, messageList } from '@/types/chat';
 import { create } from 'zustand';
 
+type ModelType = {
+    value: string
+    label: string
+    name: string
+}
+
 interface ChatListState {
     chatId: string | null
     model: string
+    defaultSupportModels: ModelType[]
     chatHistory: ChatHistoryType
     messageList: messageList
     isLoadingChatHistory: boolean
@@ -20,6 +27,10 @@ interface ChatListState {
 export const useChatStore = create<ChatListState>((set, get) => ({
     chatId: null,
     model: 'grok-2-vision-1212',
+    defaultSupportModels: [
+        { value: 'grok-2-vision-1212', label: 'Grok 2 Vision', name: 'Grok' },
+        { value: 'gemini-gemini-2.0-flash', label: 'Gemini 2.0 Flash', name: 'Gemini' },
+    ],
     chatHistory: {
         list: [],
         hasMore: true
