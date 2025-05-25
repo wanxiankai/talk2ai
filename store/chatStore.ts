@@ -9,7 +9,7 @@ type ModelType = {
 
 interface ChatListState {
     chatId: string | null
-    model: string
+    model: 'grok-2-vision-1212' | 'gemini-gemini-2.0-flash'
     defaultSupportModels: ModelType[]
     chatHistory: ChatHistoryType
     messageList: messageList
@@ -29,7 +29,7 @@ export const useChatStore = create<ChatListState>((set, get) => ({
     model: 'grok-2-vision-1212',
     defaultSupportModels: [
         { value: 'grok-2-vision-1212', label: 'Grok 2 Vision', name: 'Grok' },
-        { value: 'gemini-gemini-2.0-flash', label: 'Gemini 2.0 Flash', name: 'Gemini' },
+        { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash', name: 'Gemini' },
     ],
     chatHistory: {
         list: [],

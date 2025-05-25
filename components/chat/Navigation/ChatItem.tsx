@@ -8,13 +8,14 @@ import { useDialogStore } from '@/store/dialogStore'
 
 
 export default function ChatItem({ item }: { item: ChatItemType }) {
-    const { chatId, setChatId } = useChatStore(state => state)
-    const fetchMessageList = useChatStore((state) => state.fetchMessageList)
-    const { setShowDeleteChatDialog} = useDialogStore((state) => state)
+    const { chatId, setChatId, setModel, fetchMessageList } = useChatStore(state => state)
+    const { setShowDeleteChatDialog } = useDialogStore((state) => state)
     const selectChat = async () => {
         if (item.id === chatId) return
         await fetchMessageList(item.id)
         setChatId(item.id)
+        setModel(item.model)
+
     }
 
     const handleDeleteChat = (e: React.MouseEvent) => {
