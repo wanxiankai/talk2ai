@@ -186,7 +186,7 @@ export default function ChatInput() {
             <div className='w-[810px] relative flex flex-row items-center justify-between border-none rounded-[10px] bg-white pr-1.5 pl-3.5 py-1.5 outline-none focus-within:border-[#F78C2A]'>
                 <TextareaAutoSize
                     className="outline-none flex-1 bg-transparent resize-none min-w-[650px] border-0 "
-                    placeholder="Message Ardio"
+                    placeholder="Feel free to ask me anything..."
                     rows={1}
                     maxRows={27}
                     value={messageText}
