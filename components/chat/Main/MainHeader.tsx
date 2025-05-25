@@ -35,6 +35,8 @@ export default function MainHeader() {
 
     const handleChangeModel = (value: string) => {
         setModel(value)
+        setChatId(null)
+        clearMessageList()
     }
 
     return (
