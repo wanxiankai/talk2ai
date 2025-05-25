@@ -61,7 +61,7 @@ export default function MainHeader() {
                     <Select defaultValue={model} onValueChange={handleChangeModel} value={model}>
                         <SelectTrigger
                             defaultValue={model}
-                            className="min-w-36 items-center border-none text-[#333] rounded-xl [&_[data-description]]:hidden focus:ring-transparent"
+                            className="min-w-36 items-center py-2 border-none text-[#333] rounded-xl [&_[data-description]]:hidden focus:ring-transparent"
                         >
                             <SelectValue />
                         </SelectTrigger>
