@@ -16,6 +16,11 @@ export default function Welcome() {
                 </div>
                 <div className='w-48 min-h-38 bg-white rounded-3xl px-3.5 flex  items-center cursor-pointer hover:-translate-y-2 transform transition-transform duration-200 ease-in-out hover:shadow-[0_4px_30px_0_rgba(0,0,0,0.06)]'>
                     <span>
+                        There are two free models available: Gemini and Grok.
+                    </span>
+                </div>
+                <div className='w-48 min-h-38 bg-white rounded-3xl px-3.5 flex  items-center cursor-pointer hover:-translate-y-2 transform transition-transform duration-200 ease-in-out hover:shadow-[0_4px_30px_0_rgba(0,0,0,0.06)]'>
+                    <span>
                         You can use it to ask questions about anything for free.
                     </span>
                 </div>
