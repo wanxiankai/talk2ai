@@ -61,14 +61,14 @@ export default function MainHeader() {
                     <Select defaultValue={model} onValueChange={handleChangeModel} value={model}>
                         <SelectTrigger
                             defaultValue={model}
-                            className="min-w-36 bg-white items-center py-2 border-none text-[#333] rounded-xl [&_[data-description]]:hidden focus:ring-transparent"
+                            className="min-w-36 bg-white cursor-pointer items-center py-2 border-none text-[#333] rounded-xl [&_[data-description]]:hidden focus:ring-transparent"
                         >
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent className='min-w-36 bg-white'>
                             {defaultSupportModels.map((item) => (
                                 <SelectItem value={item.value} key={item.value}>
-                                    <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center justify-between gap-3 cursor-pointer">
                                         {item.name === 'Grok' ? <Grok size={24} /> : <Gemini size={24} />}
                                         <div className="grid gap-0.5">
                                             {item.label}
