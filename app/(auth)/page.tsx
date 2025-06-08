@@ -34,7 +34,7 @@ export default function LoginPage() {
         <VideoBackground />
         <div className="absolute inset-0 flex flex-col justify-center pl-8">
           <div className='h-full flex flex-col justify-center'>
-            <p className='text-6xl font-bold bg-gradient-to-r from-pink-500 via-[#F78C2A] to-[#fed9b6] bg-clip-text text-transparent'>The AI Chat App from Kevin Wan</p>
+            <p className='text-6xl font-bold bg-gradient-to-r from-pink-500 via-[#F78C2A] to-[#fed9b6] bg-clip-text text-transparent'>The AI Chat App from Wanxiankai</p>
             <TypingCarousel />
           </div>
         </div>
