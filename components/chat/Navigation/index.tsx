@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import SearchBar from './SearchBar'
 import ChatList from './ChatList'
 import NewChatButton from './NewChatButton'
+import SocialMedia from './SocialMedia'
 
 export default function Navigation() {
     const showFullNav = useAppStore((state) => state.showFullNav)
@@ -13,6 +14,7 @@ export default function Navigation() {
             <SearchBar />
             <ChatList />
             <NewChatButton />
+            <SocialMedia />
         </nav>
     )
 }
