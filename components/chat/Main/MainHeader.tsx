@@ -52,9 +52,9 @@ export default function MainHeader() {
                         alt='expand'
                     />
                 }
-                <div className='w-[92px] h-[23px] flex-none cursor-pointer' onClick={handleNewChat}>
+                {/* <div className='w-[92px] h-[23px] flex-none cursor-pointer' onClick={handleNewChat}>
                     <Image src='/asserts/png/t2ai.png' alt='chat logo' width={92} height={23} />
-                </div>
+                </div> */}
             </div>
             <div className='flex items-center'>
                 <div className='flex flex-col items-end min-w-36'>
