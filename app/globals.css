@@ -225,19 +225,19 @@
       height: 1rem;
       width: 0.5rem;
     }
-  
+
     @media screen and (max-width: 768px) {
       ::-webkit-scrollbar {
         display: none;
         scrollbar-width: none; /* Firefox */
       }
     }
-  
+
     .hide-scroll-bar::-webkit-scrollbar {
       display: none;
       scrollbar-width: none; /* Firefox */
     }
-  
+
     ::-webkit-scrollbar-thumb {
       --tw-border-opacity: 1;
       background-color: rgba(217, 217, 227, 0.8);
@@ -245,7 +245,7 @@
       border-radius: 9999px;
       border-width: 1px;
     }
-  
+
     ::-webkit-scrollbar-thumb:hover {
       background-color: rgba(217, 217, 227, 0.6);
     }
@@ -254,22 +254,22 @@
       background-color: transparent;
       border-radius: 9999px;
     }
-  
+
     pre ::-webkit-scrollbar-thumb {
       display: none;
     }
     pre {
       scrollbar-width: 0;
     }
-  
+
     textarea:focus {
       outline: none;
     }
-  
+
     a.link {
       @apply underline dark:hover:text-white hover:text-black;
     }
-  
+
   }
 
   @layer components {
@@ -279,7 +279,7 @@
       flex-direction: column;
       padding-left: 1rem;
     }
-  
+
     .markdown ol li,
     .markdown ol li > p,
     .markdown ol ol,
@@ -336,4 +336,13 @@
 .hljs-symbol,
 .hljs-title {
   color: #f22c3d;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
