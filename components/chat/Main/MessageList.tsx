@@ -6,6 +6,7 @@ import { answerStatusType } from '@/types/chat';
 import MarkDown from '@/components/common/MarkDown';
 import { ChatContainerContent, ChatContainerRoot } from '@/components/ui/chat-container';
 import { ScrollButton } from '@/components/ui/scroll-button';
+import { Markdown } from '@/components/ui/markdown';
 
 
 export default function MessageList() {
@@ -77,7 +78,10 @@ const MessageContentErrorText = ({ msg }: { msg: string }) => {
 }
 
 const MessageContentText = ({ msg }: { msg: string }) => {
-  return (<div className='w-fit text-sm font-medium py-2 px-4 rounded-[10px] bg-[#FFF]'>
-    <MarkDown content={msg} />
+  return (<div className='w-fit max-w-[600px] text-sm font-medium py-2 px-4 rounded-[10px] bg-[#FFF]'>
+    {/* <MarkDown content={msg} /> */}
+    <Markdown className="prose prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-h5:text-sm prose-h6:text-xs">
+        {msg}
+      </Markdown>
   </div >)
 }
