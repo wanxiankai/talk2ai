@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       // 将 userId 添加到 session 对象
       if (token && session.user) {
-        (session.user as any).id = token.sub; // token.sub 是用户的 ID
+        (session.user as { id?: string }).id = token.sub as string;
       }
       return session;
     },
