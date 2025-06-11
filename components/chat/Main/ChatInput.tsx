@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 export default function ChatInput() {
     const { data: session } = useSession();
     const [messageText, setMessageText] = React.useState('')
-    const { chatId, model, setChatId, addNewMessage, messageList, updateLatestMessage } = useChatStore(state => state)
+    const { chatId, model, setChatId, addNewMessage, getChatHistory, messageList, updateLatestMessage } = useChatStore(state => state)
     const chatIdRef = useRef<string | null>(null)
     const isSendingRef = useRef(false)
     const stopRef = useRef(false)
@@ -179,6 +179,7 @@ export default function ChatInput() {
 
         } finally {
             isSendingRef.current = false
+            await getChatHistory(1)
         }
     }
 
