@@ -8,7 +8,6 @@ import {
 import { signOut, useSession } from 'next-auth/react'
 import { useAppStore } from '@/store/appStore'
 import { useChatStore } from '@/store/chatStore'
-import { toast } from 'react-toastify'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Gemini, Grok } from '@lobehub/icons'
 
@@ -22,16 +21,6 @@ export default function MainHeader() {
     const { user } = session
     const userName = user.name || user.email || '用户';
     const userImage = user.image || '/asserts/png/default-avatar.png';
-
-    const handleNewChat = async () => {
-        try {
-            setChatId(null)
-            clearMessageList()
-        } catch (error) {
-            console.log(error)
-            toast.error('Failed to create new chat')
-        }
-    }
 
     const handleChangeModel = (value: string) => {
         setModel(value)
