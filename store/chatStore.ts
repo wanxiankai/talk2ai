@@ -89,11 +89,9 @@ export const useChatStore = create<ChatListState>((set, get) => ({
         set({ messageList: [] })
     },
     addNewMessage: (message: Message) => {
-        set((state) => {
-            return {
-                messageList: [...state.messageList, message]
-            }
-        })
+      const originalMessageList = get().messageList;
+        const updatedMessageList = [...originalMessageList, message];
+        set({ messageList: updatedMessageList });
     },
     updateLatestMessage: (message: Message) => {
         set((state) => {
