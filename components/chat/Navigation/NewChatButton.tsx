@@ -11,7 +11,8 @@ export default function NewChatButton() {
     try {
       setChatId(null)
       clearMessageList()
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+    } catch (e: any) {
       toast.error('Failed to create new chat')
     }
   }
