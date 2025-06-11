@@ -42,7 +42,7 @@ export const useChatStore = create<ChatListState>((set, get) => ({
         set({ chatId })
     },
     setModel: (model: string) => {
-        set({ model })
+        set({ model: model as 'grok-2-vision-1212' | 'gemini-gemini-2.0-flash' })
     },
     getChatHistory: async (page: number) => {
         if (!get().chatHistory.hasMore && get().isLoadingChatHistory) return
