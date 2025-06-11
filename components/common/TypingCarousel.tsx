@@ -29,8 +29,8 @@ const TypingCarousel: React.FC = () => {
 
     return (
         <div className="text-[#F78C2A] text-5xl font-bold mt-4">
-            <Slider {...settings} key={currentIndex}>
-            {phrases.map((phrase, index) => {
+            <Slider {...settings}>
+                {phrases.map((phrase, index) => {
                 return (
                     <div key={index} className="flex items-center">
                         {currentIndex === index && (
