@@ -18,7 +18,8 @@ export default function Main() {
         if (chatId) {
             initMessageList()
         }
-    }, [chatId, initMessageList])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
 
     return (
@@ -26,7 +27,7 @@ export default function Main() {
             <main className='flex flex-col w-full h-full overflow-y-auto relative'>
                 <MainHeader />
                 {messageList.length === 0 && <Welcome />}
-                <MessageList />
+                {messageList.length > 0 && <MessageList />}
                 <ChatInput />
                 <HelpIcon />
             </main>
