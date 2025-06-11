@@ -52,6 +52,7 @@ export default function ChatInput() {
                 body: JSON.stringify({
                     title: message.substring(0, 20),
                     model,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     userId: (session?.user as any).id,
                 }),
             })
@@ -190,7 +191,8 @@ export default function ChatInput() {
                     rows={1}
                     maxRows={27}
                     value={messageText}
-                    onChange={(e: any) => {
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+
                         setMessageText(e.target.value)
                     }}
                     onKeyDown={handleKeyDown}
