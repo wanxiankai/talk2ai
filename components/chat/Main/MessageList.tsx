@@ -17,7 +17,7 @@ export default function MessageList() {
   return (
     <div ref={containerRef} className='w-full min-w-[622px] flex-1 flex flex-col items-center justify-center overflow-y-auto mt-5 pt-5'>
       <ChatContainerRoot className='w-full'>
-        <ChatContainerContent className='w-[840px]'>
+        <ChatContainerContent className='w-[840px] mx-auto'>
           {messageList.map((message, index) => {
             const isUser = message.role === 'user'
             const isAi = message.role === 'assistant'
