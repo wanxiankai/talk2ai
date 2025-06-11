@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import geminiai from "@/lib/gemini";
 import { rateLimit } from "@/lib/rateLimit";
 import openaiClient from "@/lib/openai";

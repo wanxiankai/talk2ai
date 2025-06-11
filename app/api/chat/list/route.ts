@@ -12,10 +12,10 @@ export async function GET(request: NextRequest) {
 
     try {
         const session = await getServerSession(authOptions);
-        if (!session || !session.user || !(session.user as any).id) {
+        if (!session || !session.user || !(session.user as { id: string }).id) {
             return NextResponse.json({ error: '未授权' }, { status: 401 });
         }
-        const userId = (session.user as any).id;
+        const userId = (session.user as { id: string }).id;
 
         const param = request.nextUrl.searchParams.get('page')
         const page = param ? parseInt(param) : 1;
