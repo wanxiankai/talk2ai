@@ -122,7 +122,6 @@ export default function ChatInput() {
         isSendingRef.current = true
 
         try {
-            await createOrGetChatId(currentInput, 'user')
             const currentAiResponseMessage: Message = {
                 id: new Date().getTime().toString(),
                 chatId: chatIdRef.current,
@@ -131,6 +130,7 @@ export default function ChatInput() {
                 answerStatus: 'loading',
             }
             addNewMessage(currentAiResponseMessage)
+            await createOrGetChatId(currentInput, 'user')
             const messages = messageList.concat([userMessage])
             const requestBody = { messages, model }
             const controller = new AbortController();
