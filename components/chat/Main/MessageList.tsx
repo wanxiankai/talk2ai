@@ -71,7 +71,7 @@ const MessageLoading = () => {
 }
 
 const MessageContentErrorText = ({ msg }: { msg: string }) => {
-  return (<div className='w-fit text-sm font-medium py-2 px-4 rounded-[10px] bg-[#FFE6E3]'>
+  return (<div className='w-fit text-sm font-medium py-2 px-4 rounded-[10px] bg-[#FFE6E3] leading-6'>
     <Markdown className="prose prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-h5:text-sm prose-h6:text-xs">
       {msg}
     </Markdown>
@@ -79,7 +79,7 @@ const MessageContentErrorText = ({ msg }: { msg: string }) => {
 }
 
 const MessageContentText = ({ msg }: { msg: string }) => {
-  return (<div className='w-fit max-w-[600px] text-sm font-medium py-2 px-4 rounded-[10px] bg-[#FFF]'>
+  return (<div className='w-fit max-w-[600px] text-sm font-medium py-2 px-4 rounded-[10px] bg-[#FFF] leading-6'>
     <Markdown className="prose prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-h5:text-sm prose-h6:text-xs">
       {msg}
     </Markdown>
