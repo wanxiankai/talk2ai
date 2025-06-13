@@ -13,11 +13,14 @@ interface ChatListState {
     defaultSupportModels: ModelType[]
     chatHistory: ChatHistoryType
     messageList: messageList
+    isSearching: boolean
     isLoadingChatHistory: boolean
     isLoadingMessageList: boolean
     setChatId: (chatId: string | null) => void
     setModel: (model: string) => void
+    setIsSearching: (isSearching: boolean) => void
     getChatHistory: (page: number) => Promise<void>
+    searchChatHistory: (keyword: string) => Promise<void>
     fetchMessageList: (chatId: string) => Promise<void>
     clearMessageList: () => void
     addNewMessage: (message: Message) => void
@@ -36,6 +39,7 @@ export const useChatStore = create<ChatListState>((set, get) => ({
         hasMore: true
     },
     messageList: [],
+    isSearching: false,
     isLoadingChatHistory: false,
     isLoadingMessageList: false,
     setChatId: (chatId: string | null) => {
@@ -44,8 +48,12 @@ export const useChatStore = create<ChatListState>((set, get) => ({
     setModel: (model: string) => {
         set({ model: model as 'grok-2-vision-1212' | 'gemini-gemini-2.0-flash' })
     },
+    setIsSearching: (isSearching: boolean) => {
+        set({ isSearching })
+    },
     getChatHistory: async (page: number) => {
-        if (!get().chatHistory.hasMore && get().isLoadingChatHistory) return
+        console.log(!get().chatHistory.hasMore, get().isLoadingChatHistory)
+        if (!get().chatHistory.hasMore || get().isLoadingChatHistory) return
         set({ isLoadingChatHistory: true })
         const res = await fetch(`/api/chat/list?page=${page}`, {
             method: 'GET',
@@ -61,6 +69,20 @@ export const useChatStore = create<ChatListState>((set, get) => ({
         } else {
             set({ chatHistory: { list: [...get().chatHistory.list, ...list], hasMore }, isLoadingChatHistory: false })
         }
+    },
+    searchChatHistory: async (keyword: string) => {
+        if (get().isLoadingChatHistory) return
+        set({ isLoadingChatHistory: true })
+        const response = await fetch(`/api/chat/list?search=${encodeURIComponent(keyword)}`, {
+            method: 'GET',
+            cache: 'no-store',
+        })
+        if (!response.ok) {
+            set({ isLoadingChatHistory: false })
+            throw new Error('Failed to fetch data')
+        }
+        const { data: { list } } = await response.json()
+        set({ chatHistory: { list, hasMore: true }, isLoadingChatHistory: false })
     },
 
     fetchMessageList: async (chatId: string) => {
@@ -89,7 +111,7 @@ export const useChatStore = create<ChatListState>((set, get) => ({
         set({ messageList: [] })
     },
     addNewMessage: (message: Message) => {
-      const originalMessageList = get().messageList;
+        const originalMessageList = get().messageList;
         const updatedMessageList = [...originalMessageList, message];
         set({ messageList: updatedMessageList });
     },
