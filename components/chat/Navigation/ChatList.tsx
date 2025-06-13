@@ -3,10 +3,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 import ChatItem from './ChatItem'
 import { InView } from "react-intersection-observer";
 import { useChatStore } from '@/store/chatStore'
+import eventBus from '@/lib/EventBus';
+import { INITCHATLISTPAGE } from '@/constant/events';
 
 export default function ChatList() {
   const [page, setPage] = useState(1)
-  const { chatHistory: { list, hasMore }, isLoadingChatHistory, getChatHistory } = useChatStore((state) => state)
+  const [refresh, setRefresh] = useState(false)
+  const { chatHistory: { list, hasMore }, isSearching, isLoadingChatHistory, getChatHistory } = useChatStore((state) => state)
 
   const getChatListData = useCallback(async (page: number) => {
     await getChatHistory(page)
@@ -15,7 +18,7 @@ export default function ChatList() {
 
   useEffect(() => {
     getChatListData(page)
-  }, [getChatListData, page])
+  }, [getChatListData, page, refresh])
 
   const handleInView = (inView: boolean) => {
     console.log('handleInView', inView, page, hasMore)
@@ -23,6 +26,17 @@ export default function ChatList() {
       setPage((_page) => _page + 1)
     }
   }
+
+  useEffect(() => {
+    const initChatList: EventListener = () => {
+      setPage(() => 1)
+      setRefresh((prev) => !prev)
+    }
+    eventBus.on(INITCHATLISTPAGE, initChatList)
+    return () => {
+      eventBus.off(INITCHATLISTPAGE, initChatList)
+    }
+  }, [])
 
   return (
     <div className='min-w-72 flex-1 overflow-y-auto pb-5' id='scrollableDiv'>
@@ -32,7 +46,7 @@ export default function ChatList() {
             {list.map((item, index) => <ChatItem key={index} item={item} />)}
           </div>
         )}
-      {!isLoadingChatHistory && (<InView as="div" onChange={handleInView}></InView>)}
+      {!isLoadingChatHistory && !isSearching && (<InView as="div" onChange={handleInView}></InView>)}
     </div>
   )
 }
