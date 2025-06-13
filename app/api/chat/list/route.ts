@@ -17,17 +17,37 @@ export async function GET(request: NextRequest) {
         }
         const userId = (session.user as { id: string }).id;
 
-        const param = request.nextUrl.searchParams.get('page')
-        const page = param ? parseInt(param) : 1;
+        // 获取查询参数
+        const searchParams = request.nextUrl.searchParams;
+        const pageParam = searchParams.get('page');
+        const searchParam = searchParams.get('search');
+        const page = pageParam ? parseInt(pageParam) : 1;
+        const pageSize = 20;
 
-        console.log(`[Chat List API] 用户ID: ${userId}, 请求页码: ${page}`);
+        console.log(`[Chat List API] 用户ID: ${userId}, 请求页码: ${page}, 搜索关键词: ${searchParam || '无'}`);
+
+        // 构建查询条件
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const whereCondition: any = {
+            userId: userId,
+        };
+
+        // 如果有搜索关键词，添加搜索条件
+        if (searchParam && searchParam.trim()) {
+            whereCondition.OR = [
+                {
+                    title: {
+                        contains: searchParam.trim(),
+                        mode: 'insensitive' // 不区分大小写搜索
+                    }
+                },
+            ];
+        }
 
         const list = await prisma.chat.findMany({
-            where: {
-                userId: userId, // 使用正确的字段名
-            },
-            skip: (page - 1) * 20,
-            take: 20,
+            where: whereCondition,
+            skip: (page - 1) * pageSize,
+            take: pageSize,
             orderBy: {
                 updateTime: "desc"
             }
@@ -36,14 +56,23 @@ export async function GET(request: NextRequest) {
         console.log(`[Chat List API] 成功获取到 ${list.length} 条聊天记录`);
 
         const count = await prisma.chat.count({
-            where: {
-                userId: userId,
-            }
+            where: whereCondition,
         });
 
-        const hasMore = count > page * 20;
+        const hasMore = count > page * pageSize;
+        
         return new NextResponse(
-            JSON.stringify({ code: 0, data: { list, hasMore } }),
+            JSON.stringify({ 
+                code: 0, 
+                data: { 
+                    list, 
+                    hasMore,
+                    total: count,
+                    page,
+                    pageSize,
+                    isSearch: !!searchParam
+                } 
+            }),
             {
                 status: 200,
                 headers: {
