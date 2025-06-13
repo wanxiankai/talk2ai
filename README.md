@@ -25,7 +25,7 @@ T2ai is a open-source chatbot likly project that allows you to interact with AI 
 
 # Next Todo
 
-- Add chat history search
+- [x] ~~Add chat history search~~
 - Add custom model support
 - Add more authentication methods
 - Support mobile devices
