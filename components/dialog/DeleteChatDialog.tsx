@@ -4,6 +4,8 @@ import SvgIcon from '../common/SvgIcon'
 import { toast } from 'react-toastify'
 import { useChatStore } from '@/store/chatStore'
 import { useDialogStore } from '@/store/dialogStore'
+import { INITCHATLISTPAGE } from '@/constant/events'
+import eventBus from '@/lib/EventBus'
 
 export default function DeleteChatDialog() {
     const { showDeleteChatDialog, deleteChatId, setShowDeleteChatDialog } = useDialogStore((state) => state)
@@ -32,7 +34,8 @@ export default function DeleteChatDialog() {
                 return
             }
             clearMessageList()
-            await getChatHistory(1)
+            eventBus.emit(INITCHATLISTPAGE)
+            // await getChatHistory(1)
             setChatId(null)
             toast.success('Delete chat successfully')
         } catch (error) {

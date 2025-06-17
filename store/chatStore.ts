@@ -53,7 +53,8 @@ export const useChatStore = create<ChatListState>((set, get) => ({
     },
     getChatHistory: async (page: number) => {
         console.log(!get().chatHistory.hasMore, get().isLoadingChatHistory)
-        if (!get().chatHistory.hasMore || get().isLoadingChatHistory) return
+        if(get().isLoadingChatHistory) return
+        if (!get().chatHistory.hasMore && page > 1) return
         set({ isLoadingChatHistory: true })
         const res = await fetch(`/api/chat/list?page=${page}`, {
             method: 'GET',
