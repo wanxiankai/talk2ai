@@ -9,7 +9,7 @@ import eventBus from '@/lib/EventBus'
 
 export default function DeleteChatDialog() {
     const { showDeleteChatDialog, deleteChatId, setShowDeleteChatDialog } = useDialogStore((state) => state)
-    const { chatId, setChatId, clearMessageList, getChatHistory } = useChatStore((state) => state)
+    const { chatId, setChatId, clearMessageList } = useChatStore((state) => state)
 
 
     const handleOpenChange = (open: boolean) => {
@@ -35,7 +35,6 @@ export default function DeleteChatDialog() {
             }
             clearMessageList()
             eventBus.emit(INITCHATLISTPAGE)
-            // await getChatHistory(1)
             setChatId(null)
             toast.success('Delete chat successfully')
         } catch (error) {
