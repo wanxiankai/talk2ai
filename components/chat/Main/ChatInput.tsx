@@ -144,8 +144,13 @@ export default function ChatInput() {
                 body: JSON.stringify(requestBody)
             })
             if (!response.ok) {
-                console.log(response.statusText)
-                return
+                // 如果响应状态不是200-299，尝试解析错误信息
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.details || errorData.error || response.statusText;
+                console.error("API Error:", errorMessage);
+                toast.error(`请求失败: ${errorMessage}`);
+                updateLatestMessage({ ...currentAiResponseMessage, content: `错误: ${errorMessage}`, answerStatus: 'error' });
+                return;
             }
             if (!response.body) {
                 console.log("body error")
@@ -155,18 +160,32 @@ export default function ChatInput() {
             const decoder = new TextDecoder("utf-8")
             let done = false
             let content = ''
+
+            let incompleteLine = ''; // 用于存储不完整的行
+
             while (!done) {
                 const { value, done: doneReading } = await reader.read()
                 done = doneReading
-                const thunk = decoder.decode(value, { stream: !done })
-                if (thunk) {
-                    updateLatestMessage({ ...currentAiResponseMessage, content: content + thunk, answerStatus: 'pending' })
-                    content += thunk
-                    if (stopRef.current) {
-                        stopRef.current = false
-                        controller.abort()
-                        break
+
+                // 将接收到的 Uint8Array 解码为字符串，并与上一批次未处理完的行拼接
+                const chunk = decoder.decode(value, { stream: !done });
+                const lines = (incompleteLine + chunk).split('\n');
+                incompleteLine = lines.pop() || ''; // 保存最后一行，可能是不完整的
+
+                for (const line of lines) {
+                    if (line.startsWith('0:')) {
+                        // 提取JSON部分并解析
+                        const textChunk = JSON.parse(line.substring(2));
+                        content += textChunk;
+                        updateLatestMessage({ ...currentAiResponseMessage, content: content, answerStatus: 'pending' });
                     }
+                    // 您也可以在这里处理其他前缀，例如 '2:' 代表工具调用结果
+                }
+
+                if (stopRef.current) {
+                    stopRef.current = false
+                    controller.abort()
+                    break
                 }
             }
             await createMessage(content, 'assistant')
